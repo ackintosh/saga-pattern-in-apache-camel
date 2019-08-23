@@ -29,7 +29,7 @@
         <to uri="direct:reserveFlight"/>
         <to uri="direct:buyTrainTicket"/>
 
-        <!--<camel:process ref="throwException"/>-->
+        <camel:process ref="throwException"/>
 
         <to uri="log:END"/>
       </saga>
@@ -77,7 +77,7 @@
       <camel:from uri="direct:cancelTrainTicket"/>
 
       <!-- キャンセルに失敗する場合 -->
-      <!--<camel:process ref="throwException"/>-->
+      <camel:process ref="throwException"/>
 
       <camel:to uri="log:電車チケットをキャンセルしました"/>
     </camel:route>
