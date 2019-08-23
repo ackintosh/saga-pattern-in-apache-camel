@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+
+  <!-- SEE BELOW -->
+  <!-- The Saga Pattern in Apache Camel - Nicola Ferraro -->
+  <!-- https://www.nicolaferraro.me/2018/04/25/saga-pattern-in-apache-camel/ -->
+
+  <!--
+    <camel:process ref="throwException"/> のコメントアウトをいじってsaga componentの挙動を確認できるようにルートを作っています
+  -->
+  <camelContext id="SampleCamel" xmlns="http://camel.apache.org/schema/spring">
+    <routeContextRef ref="myCamelRoutes" />
+
+    <route id="hello">
+      <from uri="timer:hello?period=10000"/>
+      <!-- 全体を <saga> で囲む -->
+      <saga>
+        <to uri="log:START"/>
+
+        <to uri="direct:reserveFlight"/>
+        <to uri="direct:buyTrainTicket"/>
+
+        <camel:process ref="throwException"/>
+
+        <to uri="log:END"/>
+      </saga>
+    </route>
+  </camelContext>
+
+  <camel:routeContext id="myCamelRoutes">
+
+    <!-- ルート1: フライトの予約 -->
+    <camel:route id="reserveFlight">
+      <camel:from uri="direct:reserveFlight"/>
+
+      <camel:saga>
+        <camel:compensation uri="direct:cancelFlight"/>
+      </camel:saga>
+
+      <!--<camel:process ref="throwException"/>-->
+      <camel:to uri="log:フライトの予約が完了しました"/>
+    </camel:route>
+
+    <!-- ルート1の補償トランザクション: フライトのキャンセル -->
+    <camel:route id="cancelFlight">
+      <camel:from uri="direct:cancelFlight"/>
+
+      <!-- キャンセルに失敗する場合 -->
+      <!--<camel:process ref="throwException"/>-->
+
+      <camel:to uri="log:フライトをキャンセルしました"/>
+    </camel:route>
+
+    <!-- ルート2: 電車チケットの購入 -->
+    <camel:route id="buyTrainTicket">
+      <camel:from uri="direct:buyTrainTicket"/>
+
+      <camel:saga>
+        <camel:compensation uri="direct:cancelTrainTicket"/>
+      </camel:saga>
+
+      <!--<camel:process ref="throwException"/>-->
+      <camel:to uri="log:電車チケットの購入が完了しました"/>
+    </camel:route>
+
+    <!-- ルート2の補償トランザクション: 電車チケットのキャンセル -->
+    <camel:route id="cancelTrainTicket">
+      <camel:from uri="direct:cancelTrainTicket"/>
+
+      <!-- キャンセルに失敗する場合 -->
+      <!--<camel:process ref="throwException"/>-->
+
+      <camel:to uri="log:電車チケットをキャンセルしました"/>
+    </camel:route>
+  </camel:routeContext>
+</beans>
