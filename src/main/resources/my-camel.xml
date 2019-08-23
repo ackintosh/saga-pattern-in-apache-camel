@@ -29,7 +29,7 @@
         <to uri="direct:reserveFlight"/>
         <to uri="direct:buyTrainTicket"/>
 
-        <camel:process ref="throwException"/>
+        <!--<camel:process ref="throwException"/>-->
 
         <to uri="log:END"/>
       </saga>
