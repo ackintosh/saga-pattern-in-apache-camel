@@ -9,3 +9,4 @@
 - [Saga EIP - Apache Camel](https://camel.apache.org/manual/latest/saga-eip.html)
 - [nicolaferraro/camel-saga-quickstart](https://github.com/nicolaferraro/camel-saga-quickstart)
 - [Chapter 9. Saga EIP - Red Hat Customer Portal](https://access.redhat.com/documentation/en-us/red_hat_fuse/7.3/html/apache_camel_development_guide/saga-eip)
+- [camel-workshop/saga.md at master · nicolaferraro/camel-workshop](https://github.com/nicolaferraro/camel-workshop/blob/master/doc/saga.md)
